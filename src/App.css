@@ -5,7 +5,7 @@
 .App-header {
   background-color: #0C1149;
   /* min-height: 4rem; */
-  width: 100%;
+  /* width: 100%; */
   display: flex;
   padding: 1rem;
   flex-direction: row;

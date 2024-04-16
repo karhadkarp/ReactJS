@@ -1,0 +1,4 @@
+/* Dirty hack as there is no way to fix css on class */
+div.slider button.MuiButtonBase-root.MuiIconButton-root.MuiIconButton-sizeMedium {
+    margin-top: -2rem;
+}

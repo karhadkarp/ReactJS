@@ -2,21 +2,22 @@ import { InputLabel, Slider } from "@material-ui/core";
 import { useState } from "react";
 import { grey } from "@material-ui/core/colors";
 import BasicTooltip from "./BasicTooltip";
+import "./Slider.css";
 
-const SliderField = ({ label,  minValue=0, maxValue=100, handleChange=null, tooltip}) => {
+const SliderField = ({ label, className, minValue=0, maxValue=100, handleChange=null, tooltip}) => {
 
     const marks = [
         {
           value: 0,
-          label: 'Calm',
+          label: '0: Calm',
         },
         {
             value: 60,
-            label: 'Balanced',
+            label: '60: Balanced',
           },
         {
           value: 100,
-          label: 'Adventurous',
+          label: '100: Adventurous',
         },
       ];
 
@@ -34,7 +35,7 @@ const SliderField = ({ label,  minValue=0, maxValue=100, handleChange=null, tool
     }
 
     return (
-        <div style={{display:'flex', flexDirection:'row'}}>
+        <div style={{display:'flex', flexDirection:'row'}} className={className}>
             <InputLabel 
                 style={{
                     fontSize:'.875rem',
@@ -43,7 +44,7 @@ const SliderField = ({ label,  minValue=0, maxValue=100, handleChange=null, tool
             >
                 {label}
             </InputLabel>
-            <Slider  
+            <Slider 
                 min={minValue}
                 max={maxValue}
                 marks={marks}
