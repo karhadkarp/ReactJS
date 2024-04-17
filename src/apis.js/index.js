@@ -1,5 +1,5 @@
 export const getGeneralQueryResp = async({data, creativity}) => {
-    const url = 'http://127.0.0.1:5000/send_data';
+    const url = 'http://35.244.22.147:8081/send_data';
     const response = await fetch(url, {
         method: "POST", // *GET, POST, PUT, DELETE, etc.
         mode: "cors", // no-cors, *cors, same-origin
