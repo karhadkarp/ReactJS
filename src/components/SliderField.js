@@ -1,4 +1,4 @@
-import { InputLabel, Slider } from "@material-ui/core";
+import { InputLabel, Slider, useMediaQuery } from "@material-ui/core";
 import { useState } from "react";
 import { grey } from "@material-ui/core/colors";
 import BasicTooltip from "./BasicTooltip";
@@ -6,20 +6,39 @@ import "./Slider.css";
 
 const SliderField = ({ label, className, minValue=0, maxValue=100, handleChange=null, tooltip}) => {
 
-    const marks = [
-        {
-          value: 0,
-          label: '0: Calm',
-        },
-        {
-            value: 60,
-            label: '60: Balanced',
-          },
-        {
-          value: 100,
-          label: '100: Adventurous',
-        },
-      ];
+    const matches = useMediaQuery('(min-width:600px)');
+    let marks;
+    if(matches){
+        marks = [
+            {
+              value: 0,
+              label: '0: Calm',
+            },
+            {
+                value: 60,
+                label: '60: Balanced',
+              },
+            {
+              value: 100,
+              label: '100: Adventurous',
+            },
+          ];
+    } else {
+        marks = [
+            {
+              value: 0,
+              label: '0',
+            },
+            {
+                value: 60,
+                label: '60',
+              },
+            {
+              value: 100,
+              label: '100',
+            },
+          ];
+    }
 
     const handleValueChange = (event, newValue) => {
         handleChange && handleChange(newValue);

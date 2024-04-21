@@ -1,4 +1,4 @@
-import { Box, Divider, Grid } from '@material-ui/core';
+import { Backdrop, Box, CircularProgress, Divider, Grid } from '@material-ui/core';
 import { ArticleOutlined } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputText from '../components/InputText';
@@ -27,7 +27,9 @@ const SimpleApp = () => {
 
     const [loading, setLoading] = useState(false);
     const [content, setContent] = useState('')
+    const [pageLoading, setPageLoading] = useState(false);
     const handleClick = async () => {
+        setPageLoading(true);
         setQueryData(query);
         setLoading(true);
         let respText = await getGeneralQueryResp({data: query, creativity: creativity/100});
@@ -36,10 +38,17 @@ const SimpleApp = () => {
         setContent(respText);
         setShow(true);
         setLoading(false);
+        setPageLoading(false);
     }
 
     return (
         <Box sx={{ flexGrow: 1, margin:'1rem 2rem' }}>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={pageLoading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Grid container spacing={2} direction="row" justifyContent='space-evenly'>
                 <Grid item xs={12}>
                     <Grid container style={{marginTop:'.5rem'}}>
@@ -53,7 +62,7 @@ const SimpleApp = () => {
                             />
                         </Grid>
                         <Grid item md={6} xs={12}>
-                            <CardField width='90%' label="Query History" value={queryData}/>
+                            {!pageLoading &&<CardField width='90%' label="Query History" value={queryData}/> }
                         </Grid>
                     </Grid>
 
@@ -62,7 +71,7 @@ const SimpleApp = () => {
                             <SliderValue 
                                 label="Creativity" 
                                 handleChange={val => handleCreativityValue(val)}
-                                className="slider"
+                                    
                                 tooltip={<><strong>This the creativity slider.</strong><p>Please move the slider value to the creativity level you want. The higer value the more creative the model will be. For very formal communication you can select lower level of creativity.</p></>}
                             />
                         </Grid>

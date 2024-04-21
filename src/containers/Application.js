@@ -1,4 +1,4 @@
-import { Box, Divider, Grid, InputAdornment } from '@material-ui/core';
+import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment } from '@material-ui/core';
 import { ArticleOutlined, Person } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import MultipleSelect from '../components/MultiSelect';
@@ -52,7 +52,9 @@ const Application = () => {
 
     const [loading, setLoading] = useState(false);
     const [content, setContent] = useState('')
+    const [pageLoading, setPageLoading] = useState(false);
     const handleClick = async () => {
+        setPageLoading(true);
         setQueryData(query);
         setLoading(true);
         let respText = await getCutomerQueryResp({ prompt: query, creativity: creativity, productId: selectedProducts[0], customerId: selectedCustomerId });
@@ -61,18 +63,29 @@ const Application = () => {
         setContent(respText);
         setShow(true);
         setLoading(false);
+        setPageLoading(false);
     }
 
+    const [customerLoading, setCustomerLoading] = useState(false);
+    
     const getCustomerData = async (cust) => {
+        setCustomerLoading(true);
         if (cust && cust.length > 0) {
             const customers = await getCustomers(cust);
             setProducts([]);
             setCustomers(customers);
         }
+        setCustomerLoading(false);
     }
 
     return (
         <Box sx={{ flexGrow: 1, margin: '1rem 2rem' }}>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={pageLoading}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Grid container spacing={2} direction="row" justifyContent='space-evenly'>
                 <Grid item xs={12}>
                     <InputText
@@ -81,17 +94,18 @@ const Application = () => {
                         enableTypeAhead={true}
                         getData={getCustomerData}
                         suggestionsData={customers}
-                        startAdornment={<InputAdornment position="start"><Person fontSize='large' /></InputAdornment>}
+                        startAdornment={customerLoading? <CircularProgress /> :<InputAdornment position="start"><Person fontSize='large' /></InputAdornment>}
                     />
                     <MultipleSelect
                         label="Products to Market"
                         options={products}
                         handleChange={val => handleProductsChange(val)} />
 
-                    <Grid container style={{ marginTop: '2.2rem' }}>
+                    <Grid container style={{ marginTop: '3rem' }}>
                         <Grid item xs={12}>
                             <SliderValue
                                 label="Creativity"
+                                className="slider"
                                 handleChange={val => handleCreativityValue(val)}
                                 tooltip={<><strong>This the creativity slider.</strong><p>Please move the slider value to the creativity level you want. The higer value the more creative the model will be. For very formal communication you can select lower level of creativity.</p></>}
                             />
@@ -109,7 +123,7 @@ const Application = () => {
                             />
                         </Grid>
                         <Grid item md={6} xs={12}>
-                            <CardField label="Query History" value={queryData} />
+                            {!pageLoading && <CardField label="Query History" value={queryData} />}
                         </Grid>
                     </Grid>
 
