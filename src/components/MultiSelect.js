@@ -5,6 +5,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { Checkbox, ListItemText } from '@material-ui/core';
 import './MultiSelect.css';
+import { useEffect } from 'react';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -22,7 +23,14 @@ const MultipleSelect = ({
     label='', 
     handleChange=null
 })  => {
+  console.log(options);
   const [item, setItem] = React.useState([]);
+
+  useEffect(() => {
+    if(options.length=== 0) {
+      setItem([]);
+    }
+  }, [options])
 
   const handleValueChange = (event) => {
     const {
@@ -32,7 +40,7 @@ const MultipleSelect = ({
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
-    handleChange &&handleChange(value);
+    handleChange && handleChange(options.filter(option => value.includes(option.value)).map(option => option.id));
   };
 
   return (
@@ -43,7 +51,7 @@ const MultipleSelect = ({
           labelId="demo-multiple-name-label"
           id="demo-multiple-name"
           multiple
-          value={item}  
+          value={options.length > 0 ?item:''}  
           onChange={handleValueChange}
           renderValue={(selected) => selected.join(', ')}
           MenuProps={MenuProps}

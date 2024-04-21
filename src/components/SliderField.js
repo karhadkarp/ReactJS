@@ -51,7 +51,7 @@ const SliderField = ({ label, className, minValue=0, maxValue=100, handleChange=
                 defaultValue={50} 
                 aria-label={label} 
                 valueLabelDisplay="auto"
-                style={{margin:'-.5rem 1rem 1rem 1rem', maxWidth:'300px'}}
+                style={{margin:'-.5rem 1rem 1rem 1rem', maxWidth:'80%'}}
                 onChange={handleValueChange}
                 onFocus={()=> handleFocus()}
                 onBlur={() => handleBlur()}

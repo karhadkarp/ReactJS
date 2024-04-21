@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 
 const CardField = ({ label, value}) => {
     const [data, setData] = useState([]);
-
-
     useEffect(() => {
         let newData;
         if(value){
@@ -29,7 +27,7 @@ const CardField = ({ label, value}) => {
                 {label}
             </InputLabel>
             <Card
-                sx={{ minWidth: '300px', maxHeight: '1rem', overflow: 'scoll'}}>
+                style={{ width: '90%', maxHeight: '4rem', overflow: 'scoll'}}>
                 <CardContent>
                 {
                     data && data.length > 0 &&

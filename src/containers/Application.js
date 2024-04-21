@@ -5,132 +5,129 @@ import MultipleSelect from '../components/MultiSelect';
 import InputText from '../components/InputText';
 import { useState } from 'react';
 import SliderValue from '../components/SliderField';
-import NumberField from '../components/NumberField';
 import CardField from '../components/CardField';
 import ResponsiveDialog from '../components/ResponsiveDialog';
+import { getCustomers, getCutomerQueryResp } from '../apis.js';
 
-const products = [
-    {id: 'product1', value: 'Product 1'},
-    {id: 'product2', value: 'Product 2'},
-    {id: 'product3', value: 'Product 3'},
-    {id: 'product4', value: 'Product 4'},
-    {id: 'product5', value: 'Product 5'},
-    {id: 'product6', value: 'Product 6'},
-    {id: 'product7', value: 'Product 7'},
-    {id: 'product8', value: 'Product 8'},
-    {id: 'product9', value: 'Product 9'},
-    {id: 'product10', value: 'Product 10'}
-  ];
-  
 const Application = () => {
-    const handleCustomerInfo = (val) => {
-        console.log(val);
-    }
 
+    const [query, setQuery] = useState('');
+    const [show, setShow] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [customers, setCustomers] = useState([]);
+    const [queryData, setQueryData] = useState(null);
+    const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+
+    const [selectedProducts, setSelectedProducts] = useState([]);
     const handleProductsChange = (val) => {
         console.log(val);
-    } 
-
-    const handleCharacterSize = val => {
-        console.log(val);
+        setSelectedProducts(val);
     }
-
-    const handleCreativityValue = val => {
-        console.log(val);
-    }
-
-    const[query, setQuery] = useState('');
-    const[show, setShow] = useState(false);
-    const[queryData, setQueryData] = useState(null);
 
     const handleQueryInfo = (val) => {
         console.log(val);
         setQuery(val)
     }
 
+    const handleCustomerInfo = (val) => {
+        setSelectedCustomerId(val);
+        customers.forEach(cust => {
+            if (cust.customer_id === val) {
+                setProducts(cust.sug_products.map(prd => {
+                    return {
+                        id: prd.SugProdID,
+                        value: prd.SugProdName
+                    }
+                }));
+            }
+        })
+        console.log(val);
+    }
+
+    const [creativity, setCreativity] = useState(0.5);
+    const handleCreativityValue = val => {
+        console.log(val);
+        setCreativity(val / 100);
+    }
+
     const [loading, setLoading] = useState(false);
-    const handleClick = () => {
+    const [content, setContent] = useState('')
+    const handleClick = async () => {
         setQueryData(query);
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-        }, 3000);
+        let respText = await getCutomerQueryResp({ prompt: query, creativity: creativity, productId: selectedProducts[0], customerId: selectedCustomerId });
+        respText = respText.replace('```html', '');
+        respText = respText.replace('```', '')
+        setContent(respText);
         setShow(true);
+        setLoading(false);
+    }
+
+    const getCustomerData = async (cust) => {
+        if (cust && cust.length > 0) {
+            const customers = await getCustomers(cust);
+            setProducts([]);
+            setCustomers(customers);
+        }
     }
 
     return (
-        <Box sx={{ flexGrow: 1, margin:'1rem 2rem' }}>
+        <Box sx={{ flexGrow: 1, margin: '1rem 2rem' }}>
             <Grid container spacing={2} direction="row" justifyContent='space-evenly'>
                 <Grid item xs={12}>
-                    <InputText 
-                        label={'Customer Information'} 
-                        handleChange={val=> handleCustomerInfo(val)}
-                        startAdornment={<InputAdornment position="start"><Person fontSize='large'/></InputAdornment>}
+                    <InputText
+                        label={'Customer Information'}
+                        handleChange={val => handleCustomerInfo(val)}
+                        enableTypeAhead={true}
+                        getData={getCustomerData}
+                        suggestionsData={customers}
+                        startAdornment={<InputAdornment position="start"><Person fontSize='large' /></InputAdornment>}
                     />
-                    <MultipleSelect 
-                        label="Products to Market" 
+                    <MultipleSelect
+                        label="Products to Market"
                         options={products}
-                        handleChange={val => handleProductsChange(val)}/>
+                        handleChange={val => handleProductsChange(val)} />
 
-                    <Grid container style={{marginTop:'2.2rem'}}>
-                        <Grid item md={6} xs={12}>
-                            <SliderValue 
-                                label="Creativity" 
+                    <Grid container style={{ marginTop: '2.2rem' }}>
+                        <Grid item xs={12}>
+                            <SliderValue
+                                label="Creativity"
                                 handleChange={val => handleCreativityValue(val)}
                                 tooltip={<><strong>This the creativity slider.</strong><p>Please move the slider value to the creativity level you want. The higer value the more creative the model will be. For very formal communication you can select lower level of creativity.</p></>}
                             />
                         </Grid>
-                        <Grid item md={6} xs={12}>
-                            <NumberField 
-                                label="Character Size" 
-                                handleChange={val => handleCharacterSize(val)}
-                                tooltip={<><strong>This the creativity slider.</strong><p>Please move the slider value to the creativity level you want. The higer value the more creative the model will be. For very formal communication you can select lower level of creativity.</p></>}
-                            />
-                        </Grid>
                     </Grid>
 
-                    <Grid container style={{marginTop:'2.2rem'}}>
+                    <Grid container style={{ marginTop: '2.2rem' }}>
                         <Grid item md={6} xs={12}>
                             {/* <TextAreaField label='Query Details'/> */}
-                            <InputText 
-                                label={'Custom Query'} 
+                            <InputText
+                                label={'Custom Query'}
                                 multiline={true}
                                 width='80%'
-                                handleChange={val=> handleQueryInfo(val)}
+                                handleChange={val => handleQueryInfo(val)}
                             />
                         </Grid>
                         <Grid item md={6} xs={12}>
-                            <CardField label="Query History" value={queryData}/>
+                            <CardField label="Query History" value={queryData} />
                         </Grid>
                     </Grid>
 
-                    <Divider style={{marginTop:'2rem', marginBottom:'2rem'}} />
+                    <Divider style={{ marginTop: '2rem', marginBottom: '2rem' }} />
 
                     <LoadingButton
-                            onClick={handleClick}
-                            loading={loading}
-                            loadingPosition="end"
-                            endIcon={<ArticleOutlined />}
-                            variant="contained"
-                        >
+                        onClick={handleClick}
+                        loading={loading}
+                        loadingPosition="end"
+                        endIcon={<ArticleOutlined />}
+                        variant="contained"
+                    >
                         <span>Generate Content</span>
                     </LoadingButton>
-                    <ResponsiveDialog 
+                    <ResponsiveDialog
                         showDialog={show}
-                        content={<><h1>Generative AI Webinar</h1><p>Join us on <strong>Sunday, April 10th at 9 am</strong> for a free webinar on Generative AI.</p>
-                        <p>Generative AI is a type of artificial intelligence that can create new data from scratch. This technology has the potential to revolutionize many i ndustries, including healthcare, manufacturing, and entertainment.</p>
-                        <p>In this webinar, you will learn about the basics of Generative AI, including:</p>
-                        <ul>
-                        <li>How Generative AI works</li>
-                        <li>The different types of Generative AI</li>
-                        <li>The potential applications of Generative AI</li>
-                        </ul>
-                        <p>You will also have the opportunity to ask questions to our expert panel.</p>
-                        <p>This webinar is perfect for anyone who is interested in learning more about Generative AI. Whether you are a business professional, a student, or s imply curious about this new technology, we encourage you to join us.</p>
-                        <p>To register for the webinar, please click on the following link:</p>
-                        <a href="https://www.example.com/webinar-registration">https://www.example.com/webinar-registration</a> <p>We hope to see you there!</p>
-                        <img src="generative-ai.jpg" alt="Generative AI"></img></>}
-                        title='Generative AI Webinar'
+                        content={content}
+                        htmlContent={<div dangerouslySetInnerHTML={{ __html: content }} />}
                         closeDialog={() => setShow(false)}
                     />
                 </Grid>
