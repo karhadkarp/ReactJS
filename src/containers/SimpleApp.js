@@ -71,7 +71,7 @@ const SimpleApp = () => {
                             <SliderValue 
                                 label="Creativity" 
                                 handleChange={val => handleCreativityValue(val)}
-                                    
+                                className="slider"
                                 tooltip={<><strong>This the creativity slider.</strong><p>Please move the slider value to the creativity level you want. The higer value the more creative the model will be. For very formal communication you can select lower level of creativity.</p></>}
                             />
                         </Grid>
