@@ -32,7 +32,7 @@ const Application = () => {
         setQuery(val)
     }
 
-    const [country, setCountry] = useState('IN');
+    const [country, setCountry] = useState('');
 
     const handleCustomerInfo = (val) => {
         setSelectedCustomerId(val);
@@ -44,7 +44,7 @@ const Application = () => {
                         value: prd.SugProdName
                     }
                 }));
-                if(cust.cust_country) setCountry(cust.cust_country);
+                setCountry(cust.cust_country ? cust.cust_country : 'IN');
             }
         })
         console.log(val);
