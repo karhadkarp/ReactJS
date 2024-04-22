@@ -19,7 +19,7 @@ export const getGeneralQueryResp = async({data, creativity}) => {
     
 }
 
-export const getCutomerQueryResp = async ({prompt, productId, customerId, creativity}) => {
+export const getCutomerQueryResp = async ({prompt, productId, customerId, creativity, customerCountry}) => {
   const url = `${uri}/send_customer_data`;
   const response = await fetch(url, {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -32,7 +32,13 @@ export const getCutomerQueryResp = async ({prompt, productId, customerId, creati
       },
       redirect: "follow", // manual, *follow, error
       referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-      body: JSON.stringify({"custom_prompt": prompt, "product_id": productId, "customer_id": customerId, "temperature": creativity}), // body data type must match "Content-Type" header
+      body: JSON.stringify({
+        "custom_prompt": prompt, 
+        "product_id": productId, 
+        "customer_id": customerId,
+        "customer_country": customerCountry, 
+        "temperature": creativity
+      }), // body data type must match "Content-Type" header
     });
     const resp = await response.text();
     return resp; // parses JSON response into native JavaScript objects

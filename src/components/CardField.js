@@ -1,46 +1,32 @@
-import { Card, CardContent, InputLabel } from "@material-ui/core";
+import { Accordion, AccordionDetails, AccordionSummary, Card, CardContent, InputLabel, Paper } from "@material-ui/core";
 import { grey } from "@material-ui/core/colors";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useEffect, useState } from "react";
 
-const CardField = ({ label, value}) => {
-    const [data, setData] = useState([]);
-    useEffect(() => {
-        let newData;
-        if(value){
-            newData = [...data, value];
-        } else{
-            newData = [...data];
-        }
-        setData(newData);
-    }, [value]);
+const CardField = ({ label, values}) => {
 
     return (
-        <div style={{display:'flex', flexDirection:'column',minWidth: '300px', maxWidth: '400px', maxHeight: '200px'}}>
-            <InputLabel 
-                style={{
-                    textAlign: 'left', 
-                    marginBottom:'.5rem', 
-                    fontSize:'.7rem',
-                    color: grey[500]
-                }}
-            >
-                {label}
-            </InputLabel>
-            <Card
-                style={{ width: '90%', maxHeight: '4rem', overflow: 'scoll'}}>
-                <CardContent>
-                {
-                    data && data.length > 0 &&
-                    <ul style={{textAlign:'left'}}>
-                            { 
-                            data.map((item, index) => (
-                                <li key={index}>{item}</li>
-                           ))}
-                    </ul>
-                }
-                </CardContent>
-            </Card>
-        </div>
+       
+                <Accordion style={{marginTop: '2rem'}}>
+                    <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1-content"
+                    id="panel1-header"
+                    >
+                    {label}
+                    </AccordionSummary>
+                    <AccordionDetails>
+                    {
+                        values && values.length > 0 &&
+                        <ul style={{textAlign:'left'}}>
+                                { 
+                                values.map((item, index) => (
+                                    <li key={index}>{item}</li>
+                            ))}
+                        </ul>
+                    }
+                    </AccordionDetails>
+                </Accordion>
     );
 };
 

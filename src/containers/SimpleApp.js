@@ -1,5 +1,5 @@
-import { Backdrop, Box, CircularProgress, Divider, Grid } from '@material-ui/core';
-import { ArticleOutlined } from '@mui/icons-material';
+import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, useMediaQuery, useTheme } from '@material-ui/core';
+import { Article, ArticleOutlined } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputText from '../components/InputText';
 import { useState } from 'react';
@@ -9,6 +9,9 @@ import ResponsiveDialog from '../components/ResponsiveDialog';
 import { getGeneralQueryResp } from '../apis.js';
 
 const SimpleApp = () => {
+
+    const theme = useTheme();
+    const matcheSmall = useMediaQuery(theme.breakpoints.up('md'));
    
     const[creativity, setCreativity] = useState(50);
     const handleCreativityValue = val => {
@@ -18,7 +21,7 @@ const SimpleApp = () => {
 
     const[query, setQuery] = useState('');
     const[show, setShow] = useState(false);
-    const[queryData, setQueryData] = useState(null);
+    const[queryData, setQueryData] = useState([]);
 
     const handleQueryInfo = (val) => {
         console.log(val);
@@ -30,7 +33,9 @@ const SimpleApp = () => {
     const [pageLoading, setPageLoading] = useState(false);
     const handleClick = async () => {
         setPageLoading(true);
-        setQueryData(query);
+        if(query){
+            setQueryData([...queryData, query]);
+        }
         setLoading(true);
         let respText = await getGeneralQueryResp({data: query, creativity: creativity/100});
         respText = respText.replace('```html', '');
@@ -42,27 +47,25 @@ const SimpleApp = () => {
     }
 
     return (
-        <Box sx={{ flexGrow: 1, margin:'1rem 2rem' }}>
+        <Box sx={{ flexGrow: 1, margin:'0rem 2rem' }}>
             <Backdrop
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={pageLoading}
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            <Grid container spacing={2} direction="row" justifyContent='space-evenly'>
-                <Grid item xs={12}>
+            <Grid container spacing={2} direction="row" justifyContent='space-between'>
+                <Grid item md={7} xs={12}>
                     <Grid container style={{marginTop:'.5rem'}}>
-                        <Grid item md={6} xs={12}>
+                        <Grid item xs={12}>
                             {/* <TextAreaField label='Query Details'/> */}
                             <InputText 
                                 label={'Custom Query'} 
                                 multiline={true}
-                                width='90%'
+                                // width={matcheSmall ? '90%': "100%"}
                                 handleChange={val=> handleQueryInfo(val)}
+                                startAdornment={<InputAdornment position="start"><Article fontSize='large' /></InputAdornment>}
                             />
-                        </Grid>
-                        <Grid item md={6} xs={12}>
-                            {!pageLoading &&<CardField width='90%' label="Query History" value={queryData}/> }
                         </Grid>
                     </Grid>
 
@@ -76,7 +79,12 @@ const SimpleApp = () => {
                             />
                         </Grid>
                     </Grid>                    
+                </Grid>
+                <Grid item md={5} xs={12}>
+                    {!pageLoading &&<CardField width='90%' label="Query History" values={queryData}/> }
+                </Grid>
 
+                <Grid item xs={12}>
                     <Divider style={{marginTop:'2rem', marginBottom:'2rem'}} />
 
                     <LoadingButton

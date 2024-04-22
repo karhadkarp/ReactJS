@@ -1,5 +1,5 @@
-import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment } from '@material-ui/core';
-import { ArticleOutlined, Person } from '@mui/icons-material';
+import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, useMediaQuery, useTheme } from '@material-ui/core';
+import { Article, ArticleOutlined, Person } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import MultipleSelect from '../components/MultiSelect';
 import InputText from '../components/InputText';
@@ -8,14 +8,18 @@ import SliderValue from '../components/SliderField';
 import CardField from '../components/CardField';
 import ResponsiveDialog from '../components/ResponsiveDialog';
 import { getCustomers, getCutomerQueryResp } from '../apis.js';
+import Flag from 'react-world-flags'
 
 const Application = () => {
+
+    const theme = useTheme();
+    const matcheSmall = useMediaQuery(theme.breakpoints.up('md'));
 
     const [query, setQuery] = useState('');
     const [show, setShow] = useState(false);
     const [products, setProducts] = useState([]);
     const [customers, setCustomers] = useState([]);
-    const [queryData, setQueryData] = useState(null);
+    const [queryData, setQueryData] = useState([]);
     const [selectedCustomerId, setSelectedCustomerId] = useState(null);
 
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -25,9 +29,10 @@ const Application = () => {
     }
 
     const handleQueryInfo = (val) => {
-        console.log(val);
         setQuery(val)
     }
+
+    const [country, setCountry] = useState('IN');
 
     const handleCustomerInfo = (val) => {
         setSelectedCustomerId(val);
@@ -39,6 +44,7 @@ const Application = () => {
                         value: prd.SugProdName
                     }
                 }));
+                if(cust.cust_country) setCountry(cust.cust_country);
             }
         })
         console.log(val);
@@ -53,11 +59,20 @@ const Application = () => {
     const [loading, setLoading] = useState(false);
     const [content, setContent] = useState('')
     const [pageLoading, setPageLoading] = useState(false);
+
     const handleClick = async () => {
         setPageLoading(true);
-        setQueryData(query);
+        if(query){
+            setQueryData([...queryData, query]);
+        }
         setLoading(true);
-        let respText = await getCutomerQueryResp({ prompt: query, creativity: creativity, productId: selectedProducts[0], customerId: selectedCustomerId });
+        let respText = await getCutomerQueryResp({
+             prompt: query, 
+             creativity: creativity, 
+             productId: selectedProducts[0], 
+             customerId: selectedCustomerId,
+             customerCountry: country
+        });
         respText = respText.replace('```html', '');
         respText = respText.replace('```', '')
         setContent(respText);
@@ -86,15 +101,17 @@ const Application = () => {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            <Grid container spacing={2} direction="row" justifyContent='space-evenly'>
-                <Grid item xs={12}>
+            <Grid container spacing={2} direction="row" justifyContent='space-between'>
+                <Grid item md={6} xs={12}>
                     <InputText
                         label={'Customer Information'}
                         handleChange={val => handleCustomerInfo(val)}
                         enableTypeAhead={true}
                         getData={getCustomerData}
                         suggestionsData={customers}
+                        showFlag={true}
                         startAdornment={customerLoading? <CircularProgress /> :<InputAdornment position="start"><Person fontSize='large' /></InputAdornment>}
+                        endAdorment={<Flag code={ country } height="16"/>}
                     />
                     <MultipleSelect
                         label="Products to Market"
@@ -111,21 +128,27 @@ const Application = () => {
                             />
                         </Grid>
                     </Grid>
+                </Grid>
 
-                    <Grid container style={{ marginTop: '2.2rem' }}>
-                        <Grid item md={6} xs={12}>
+                <Grid item md={6} xs={12}>
+                    <Grid container >
+                        <Grid item xs={12}>
                             {/* <TextAreaField label='Query Details'/> */}
                             <InputText
                                 label={'Custom Query'}
                                 multiline={true}
-                                width='80%'
+                                width='100%'
                                 handleChange={val => handleQueryInfo(val)}
+                                startAdornment={<InputAdornment position="start"><Article fontSize='large' /></InputAdornment>}
                             />
                         </Grid>
-                        <Grid item md={6} xs={12}>
-                            {!pageLoading && <CardField label="Query History" value={queryData} />}
+                        <Grid item xs={12}>
+                            {!pageLoading && <CardField label="Query History" values={queryData} />}
                         </Grid>
                     </Grid>
+                </Grid>
+
+                <Grid item xs={12}>
 
                     <Divider style={{ marginTop: '2rem', marginBottom: '2rem' }} />
 
