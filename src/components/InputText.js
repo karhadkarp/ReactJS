@@ -23,7 +23,7 @@ function InputText({ id = getUniqueId(), label, startAdornment = null, endAdorme
 
 
     const debouncedFetch = debounce(value => {
-        if (enableTypeAhead && value.length >= 1) {
+        if (enableTypeAhead && value.length >= 3) {
             getData(value); 
         }
     }, 500);
