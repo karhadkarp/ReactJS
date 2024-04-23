@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Button, debounce } from '@mui/material';
 import Flag from 'react-world-flags';
 
-function InputText({ id = getUniqueId(), label, startAdornment = null, endAdorment = null, handleChange, multiline = false, width, enableTypeAhead = false, getData, suggestionsData, showFlag }) {
+function InputText({ id = getUniqueId(), label, startAdornment = null, endAdorment = null, handleChange, multiline = false, width, enableTypeAhead = false, getData, clearData, suggestionsData, showFlag }) {
     const [focused, setFocused] = useState(false);
     const [value, setValue] = useState('');
     const [suggestions, setSuggestions] = useState([]);
@@ -24,7 +24,9 @@ function InputText({ id = getUniqueId(), label, startAdornment = null, endAdorme
 
     const debouncedFetch = debounce(value => {
         if (enableTypeAhead && value.length >= 3) {
-            getData(value); 
+            getData && getData(value); 
+        } else {
+            clearData && clearData();
         }
     }, 500);
 

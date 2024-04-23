@@ -5,8 +5,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { FormControlLabel, Grid, Switch } from '@material-ui/core';
+import { useEffect, useState } from 'react';
+import logo from'../dilSeDigital.png';
 
-export default function ResponsiveDialog({showDialog, closeDialog, content, htmlContent}) {
+export default function ResponsiveDialog({showDialog, closeDialog, showLocal, htmlContent, converttoLocal, customerLanguage}) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -14,6 +17,17 @@ export default function ResponsiveDialog({showDialog, closeDialog, content, html
     closeDialog && closeDialog();
   };
 
+  const [local, setLocal] = useState(false);
+
+  useEffect(() => {
+    setLocal(showLocal);
+  }, [showLocal]);
+
+
+  const handleChange = (event) => {
+    setLocal(!local);
+    converttoLocal && converttoLocal();
+  };
 
   return (
     <>
@@ -25,6 +39,41 @@ export default function ResponsiveDialog({showDialog, closeDialog, content, html
       >
         <DialogContent>
           <DialogContentText>
+           
+            {/* <Grid container direction="row" justifyContent='space-'>
+              <Grid item xs={6}>
+                <img src={logo} alt='Dil se Digital' height={40} />
+              </Grid>
+              <Grid item xs={6}>
+                {customerLanguage && customerLanguage !== 'English' && (
+                  <FormControlLabel
+                    style={{}}
+                    control={
+                      <Switch checked={local} onChange={handleChange} name="local" color='primary'/>
+                    }
+                  label={`Show in ${customerLanguage}`}
+                />
+                )}
+              </Grid>
+            </Grid> */}
+
+            <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'left'
+                  }}>
+                <img src={logo} alt='Dil se Digital' height={40} />
+                {customerLanguage && customerLanguage !== 'English' && (
+                  <FormControlLabel
+                    style={{}}
+                    control={
+                      <Switch checked={local} onChange={handleChange} name="local" color='primary'/>
+                    }
+                  label={`Show in ${customerLanguage}`}
+                />
+                )}
+            </div>
            {htmlContent}
           </DialogContentText>
         </DialogContent>

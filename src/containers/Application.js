@@ -7,13 +7,11 @@ import { useState } from 'react';
 import SliderValue from '../components/SliderField';
 import CardField from '../components/CardField';
 import ResponsiveDialog from '../components/ResponsiveDialog';
-import { getCustomers, getCutomerQueryResp } from '../apis.js';
+import { getCustomers, getCutomerQueryResp, getGeneralQueryResp } from '../apis.js';
 import Flag from 'react-world-flags'
+import {countries} from "./countries.js"
 
 const Application = () => {
-
-    const theme = useTheme();
-    const matcheSmall = useMediaQuery(theme.breakpoints.up('md'));
 
     const [query, setQuery] = useState('');
     const [show, setShow] = useState(false);
@@ -21,18 +19,69 @@ const Application = () => {
     const [customers, setCustomers] = useState([]);
     const [queryData, setQueryData] = useState([]);
     const [selectedCustomerId, setSelectedCustomerId] = useState(null);
-
+    const [loading, setLoading] = useState(false);
+    const [content, setContent] = useState('')
+    const [pageLoading, setPageLoading] = useState(false);
+    const [origialText, setOriginalText] = useState('');
+    const [creativity, setCreativity] = useState(0.5);
     const [selectedProducts, setSelectedProducts] = useState([]);
+    const [convertedText, setConvertedText] = useState('');
+    const [showLocal, setShowLocal] = useState(false);
+    const [country, setCountry] = useState('');
+    const [language, setLanguage] = useState('');
+    const [customerLoading, setCustomerLoading] = useState(false);
+
+    const getCustomerData = async (cust) => {
+        setContent('');
+        setConvertedText('');
+        setOriginalText('');
+        setShowLocal(false);
+        setLanguage('');
+        setCountry('');
+        setCustomerLoading(true);
+        setProducts([]);
+        setCustomers([]);
+        if (cust && cust.length > 0) {
+            const customers = await getCustomers(cust);
+            customers.forEach(cust => {
+                if(cust.cust_geography){
+                    cust.cust_country = countries[cust.cust_geography]['country'];
+                    const len = countries[cust.cust_geography]['language'].length;
+                    let index = 0;
+                    if(len > 1) {
+                        index = Math.floor(Math.random() * len);
+                    }
+                    cust.cust_language = countries[cust.cust_geography]['language'][index];
+                };
+            })
+            setCustomers(customers);
+        }
+        setCustomerLoading(false);
+    }
+
+    const clearData = () => {
+        setContent('');
+        setConvertedText('');
+        setOriginalText('');
+        setShowLocal(false);
+        setLanguage('');
+        setCountry('');
+        setCustomerLoading(false);
+        setProducts([]);
+        setCustomers([]);
+    }
+
     const handleProductsChange = (val) => {
-        console.log(val);
+        setContent('');
+        setConvertedText('');
+        setOriginalText('');
+        setShowLocal(false);
         setSelectedProducts(val);
     }
 
     const handleQueryInfo = (val) => {
         setQuery(val)
     }
-
-    const [country, setCountry] = useState('');
 
     const handleCustomerInfo = (val) => {
         setSelectedCustomerId(val);
@@ -44,23 +93,22 @@ const Application = () => {
                         value: prd.SugProdName
                     }
                 }));
-                setCountry(cust.cust_country ? cust.cust_country : 'IN');
+                setCountry(cust.cust_country);
+                setLanguage(cust.cust_language);
             }
         })
-        console.log(val);
     }
 
-    const [creativity, setCreativity] = useState(0.5);
     const handleCreativityValue = val => {
         console.log(val);
         setCreativity(val / 100);
     }
 
-    const [loading, setLoading] = useState(false);
-    const [content, setContent] = useState('')
-    const [pageLoading, setPageLoading] = useState(false);
-
     const handleClick = async () => {
+        if(content.length > 0){
+            setShow(true);
+            return;
+        }       
         setPageLoading(true);
         if(query){
             setQueryData([...queryData, query]);
@@ -69,28 +117,37 @@ const Application = () => {
         let respText = await getCutomerQueryResp({
              prompt: query, 
              creativity: creativity, 
-             productId: selectedProducts[0], 
+             productId: selectedProducts, 
              customerId: selectedCustomerId,
              customerCountry: country
         });
-        respText = respText.replace('```html', '');
-        respText = respText.replace('```', '')
-        setContent(respText);
+        setOriginalText(respText);
+        let sanitizedText = respText.replace('```html', '');
+        sanitizedText = sanitizedText.replace('```', '')
+        setContent(sanitizedText);
         setShow(true);
         setLoading(false);
         setPageLoading(false);
     }
-
-    const [customerLoading, setCustomerLoading] = useState(false);
     
-    const getCustomerData = async (cust) => {
-        setCustomerLoading(true);
-        if (cust && cust.length > 0) {
-            const customers = await getCustomers(cust);
-            setProducts([]);
-            setCustomers(customers);
+    
+   
+    const handleConversion = async () => {
+        if(convertedText.length > 0){
+            setShowLocal(!showLocal);
+            return;
         }
-        setCustomerLoading(false);
+        setShowLocal(!showLocal);
+        setShow(false);
+        setPageLoading(true);
+        setLoading(true);
+        let respText = await getGeneralQueryResp({data: `Convert the following text in ${language} ${origialText}`, creativity: .5});
+        respText = respText.replace('```html', '');
+        respText = respText.replace('```', '')
+        setConvertedText(respText);
+        setShow(true);
+        setLoading(false);
+        setPageLoading(false);
     }
 
     return (
@@ -108,6 +165,7 @@ const Application = () => {
                         handleChange={val => handleCustomerInfo(val)}
                         enableTypeAhead={true}
                         getData={getCustomerData}
+                        clearData={clearData}
                         suggestionsData={customers}
                         showFlag={true}
                         startAdornment={customerLoading? <CircularProgress /> :<InputAdornment position="start"><Person fontSize='large' /></InputAdornment>}
@@ -133,7 +191,6 @@ const Application = () => {
                 <Grid item md={6} xs={12}>
                     <Grid container >
                         <Grid item xs={12}>
-                            {/* <TextAreaField label='Query Details'/> */}
                             <InputText
                                 label={'Custom Query'}
                                 multiline={true}
@@ -164,7 +221,11 @@ const Application = () => {
                     <ResponsiveDialog
                         showDialog={show}
                         content={content}
-                        htmlContent={<div dangerouslySetInnerHTML={{ __html: content }} />}
+                        converttoLocal={handleConversion}
+                        customerLanguage={language}
+                        showLocal={showLocal}
+                        htmlContent={
+                            showLocal ? <div dangerouslySetInnerHTML={{ __html: convertedText }} /> :<div dangerouslySetInnerHTML={{ __html: content }} />}
                         closeDialog={() => setShow(false)}
                     />
                 </Grid>
