@@ -39,24 +39,6 @@ export default function ResponsiveDialog({showDialog, closeDialog, showLocal, ht
       >
         <DialogContent>
           <DialogContentText>
-           
-            {/* <Grid container direction="row" justifyContent='space-'>
-              <Grid item xs={6}>
-                <img src={logo} alt='Dil se Digital' height={40} />
-              </Grid>
-              <Grid item xs={6}>
-                {customerLanguage && customerLanguage !== 'English' && (
-                  <FormControlLabel
-                    style={{}}
-                    control={
-                      <Switch checked={local} onChange={handleChange} name="local" color='primary'/>
-                    }
-                  label={`Show in ${customerLanguage}`}
-                />
-                )}
-              </Grid>
-            </Grid> */}
-
             <div style={{
                     display: 'flex',
                     flexDirection: 'row',

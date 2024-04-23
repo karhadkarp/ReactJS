@@ -81,6 +81,10 @@ const Application = () => {
 
     const handleQueryInfo = (val) => {
         setQuery(val)
+        setContent('');
+        setConvertedText('');
+        setOriginalText('');
+        setShowLocal(false);
     }
 
     const handleCustomerInfo = (val) => {
@@ -100,8 +104,11 @@ const Application = () => {
     }
 
     const handleCreativityValue = val => {
-        console.log(val);
         setCreativity(val / 100);
+        setContent('');
+        setConvertedText('');
+        setOriginalText('');
+        setShowLocal(false);
     }
 
     const handleClick = async () => {
@@ -129,9 +136,7 @@ const Application = () => {
         setLoading(false);
         setPageLoading(false);
     }
-    
-    
-   
+       
     const handleConversion = async () => {
         if(convertedText.length > 0){
             setShowLocal(!showLocal);
