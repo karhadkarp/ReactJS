@@ -1,4 +1,7 @@
 /* Dirty hack to fix left align as there is no reference to just align div */
 div.MuiSelect-select.MuiSelect-standard.MuiSelect-multiple.MuiInputBase-input.MuiInput-input {
     text-align: left !important;
+    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+    color: #9e9e9e;
+    font-weight: 400;
 }

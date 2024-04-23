@@ -1,4 +1,4 @@
-import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment } from '@material-ui/core';
+import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, InputLabel, TextField } from '@material-ui/core';
 import { Article, ArticleOutlined, Person } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import MultipleSelect from '../components/MultiSelect';
@@ -30,7 +30,9 @@ const Application = () => {
     const [country, setCountry] = useState('');
     const [language, setLanguage] = useState('');
     const [customerLoading, setCustomerLoading] = useState(false);
-
+    const [customerError, setCustomerError] = useState('');
+    const [pageError, setPageError] = useState('');
+    
     const getCustomerData = async (cust) => {
         setContent('');
         setConvertedText('');
@@ -41,20 +43,25 @@ const Application = () => {
         setCustomerLoading(true);
         setProducts([]);
         setCustomers([]);
+        setCustomerError('');
         if (cust && cust.length > 0) {
             const customers = await getCustomers(cust);
-            customers.forEach(cust => {
-                if(cust.cust_geography){
-                    cust.cust_country = countries[cust.cust_geography]['country'];
-                    const len = countries[cust.cust_geography]['language'].length;
-                    let index = 0;
-                    if(len > 1) {
-                        index = Math.floor(Math.random() * len);
-                    }
-                    cust.cust_language = countries[cust.cust_geography]['language'][index];
-                };
-            })
-            setCustomers(customers);
+            if(customers.length > 0){
+                customers.forEach(cust => {
+                    if(cust.cust_geography){
+                        cust.cust_country = countries[cust.cust_geography]['country'];
+                        const len = countries[cust.cust_geography]['language'].length;
+                        let index = 0;
+                        if(len > 1) {
+                            index = Math.floor(Math.random() * len);
+                        }
+                        cust.cust_language = countries[cust.cust_geography]['language'][index];
+                    };
+                })
+                setCustomers(customers);
+            } else {
+                setCustomerError('No results found. Please try a different search.')
+            }
         }
         setCustomerLoading(false);
     }
@@ -112,6 +119,7 @@ const Application = () => {
     }
 
     const handleClick = async () => {
+        setPageError('');
         if(content.length > 0){
             setShow(true);
             return;
@@ -121,18 +129,22 @@ const Application = () => {
             setQueryData([...queryData, query]);
         }
         setLoading(true);
-        let respText = await getCutomerQueryResp({
-             prompt: query, 
-             creativity: creativity, 
-             productId: selectedProducts, 
-             customerId: selectedCustomerId,
-             customerCountry: country
-        });
-        setOriginalText(respText);
-        let sanitizedText = respText.replace('```html', '');
-        sanitizedText = sanitizedText.replace('```', '')
-        setContent(sanitizedText);
-        setShow(true);
+        try {
+            let respText = await getCutomerQueryResp({
+                 prompt: query, 
+                 creativity: creativity, 
+                 productId: selectedProducts, 
+                 customerId: selectedCustomerId,
+                 customerCountry: country
+            });
+            setOriginalText(respText);
+            let sanitizedText = respText.replace('```html', '');
+            sanitizedText = sanitizedText.replace('```', '')
+            setContent(sanitizedText);
+            setShow(true);
+        } catch (error){
+            setPageError('An error occured. Please try again.')        
+        }
         setLoading(false);
         setPageLoading(false);
     }
@@ -161,19 +173,20 @@ const Application = () => {
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={pageLoading}
             >
-                <CircularProgress color="inherit" />
+                <CircularProgress color="primary" />
             </Backdrop>
             <Grid container spacing={2} direction="row" justifyContent='space-between'>
                 <Grid item md={6} xs={12}>
                     <InputText
-                        label={'Customer Information'}
+                        label={'Customer Name'}
                         handleChange={val => handleCustomerInfo(val)}
                         enableTypeAhead={true}
                         getData={getCustomerData}
                         clearData={clearData}
                         suggestionsData={customers}
                         showFlag={true}
-                        startAdornment={customerLoading? <CircularProgress /> :<InputAdornment position="start"><Person fontSize='large' /></InputAdornment>}
+                        message={customerError}
+                        startAdornment={customerLoading? <CircularProgress color='primary' /> :<InputAdornment position="start"><Person fontSize='large' color='primary'/></InputAdornment>}
                         endAdorment={<Flag code={ country } height="16"/>}
                     />
                     <MultipleSelect
@@ -187,7 +200,7 @@ const Application = () => {
                                 label="Creativity"
                                 className="slider"
                                 handleChange={val => handleCreativityValue(val)}
-                                tooltip={<><strong>This the creativity slider.</strong><p>Please move the slider value to the creativity level you want. The higer value the more creative the model will be. For very formal communication you can select lower level of creativity.</p></>}
+                                tooltip={<><strong>This the creativity slider.</strong><p>Please move the slider value to the creativity level you want. Higher value corresponds to more creative. For very formal communication you can select lower level of creativity.</p></>}
                             />
                         </Grid>
                     </Grid>
@@ -197,15 +210,15 @@ const Application = () => {
                     <Grid container >
                         <Grid item xs={12}>
                             <InputText
-                                label={'Custom Query'}
+                                label={'Additional Instructions'}
                                 multiline={true}
                                 width='100%'
                                 handleChange={val => handleQueryInfo(val)}
-                                startAdornment={<InputAdornment position="start"><Article fontSize='large' /></InputAdornment>}
+                                startAdornment={<InputAdornment position="start"><Article fontSize='large' color='primary'/></InputAdornment>}
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            {!pageLoading && <CardField label="Query History" values={queryData} />}
+                            {!pageLoading && <CardField label="Instructions History" values={queryData} />}
                         </Grid>
                     </Grid>
                 </Grid>
@@ -220,9 +233,18 @@ const Application = () => {
                         loadingPosition="end"
                         endIcon={<ArticleOutlined />}
                         variant="contained"
+                        color='primary'
                     >
                         <span>Generate Content</span>
                     </LoadingButton>
+                    <InputLabel
+                        style={{
+                            fontSize:'.8rem',
+                            color: '#d32f2f'
+                        }}
+                    >
+                        {pageError}
+                    </InputLabel>
                     <ResponsiveDialog
                         showDialog={show}
                         content={content}

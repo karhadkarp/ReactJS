@@ -1,4 +1,4 @@
-import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, useMediaQuery, useTheme } from '@material-ui/core';
+import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, InputLabel, useMediaQuery, useTheme } from '@material-ui/core';
 import { Article, ArticleOutlined } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputText from '../components/InputText';
@@ -12,6 +12,7 @@ const SimpleApp = () => {
 
     const theme = useTheme();
     const matcheSmall = useMediaQuery(theme.breakpoints.up('md'));
+    const[pageError, setPageError] = useState('');
    
     const[creativity, setCreativity] = useState(50);
     const handleCreativityValue = val => {
@@ -37,11 +38,15 @@ const SimpleApp = () => {
             setQueryData([...queryData, query]);
         }
         setLoading(true);
-        let respText = await getGeneralQueryResp({data: query, creativity: creativity/100});
-        respText = respText.replace('```html', '');
-        respText = respText.replace('```', '')
-        setContent(respText);
-        setShow(true);
+        try{
+            let respText = await getGeneralQueryResp({data: query, creativity: creativity/100});
+            respText = respText.replace('```html', '');
+            respText = respText.replace('```', '')
+            setContent(respText);
+            setShow(true);
+        }catch (err){
+            setPageError('An error occured. Please try again.') 
+        }
         setLoading(false);
         setPageLoading(false);
     }
@@ -52,7 +57,7 @@ const SimpleApp = () => {
                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                 open={pageLoading}
             >
-                <CircularProgress color="inherit" />
+                <CircularProgress color="primary" />
             </Backdrop>
             <Grid container spacing={2} direction="row" justifyContent='space-between'>
                 <Grid item md={7} xs={12}>
@@ -60,11 +65,11 @@ const SimpleApp = () => {
                         <Grid item xs={12}>
                             {/* <TextAreaField label='Query Details'/> */}
                             <InputText 
-                                label={'Custom Query'} 
+                                label={'Prompt'} 
                                 multiline={true}
                                 // width={matcheSmall ? '90%': "100%"}
                                 handleChange={val=> handleQueryInfo(val)}
-                                startAdornment={<InputAdornment position="start"><Article fontSize='large' /></InputAdornment>}
+                                startAdornment={<InputAdornment position="start"><Article fontSize='large' color='primary' /></InputAdornment>}
                             />
                         </Grid>
                     </Grid>
@@ -75,13 +80,13 @@ const SimpleApp = () => {
                                 label="Creativity" 
                                 handleChange={val => handleCreativityValue(val)}
                                 className="slider"
-                                tooltip={<><strong>This the creativity slider.</strong><p>Please move the slider value to the creativity level you want. The higer value the more creative the model will be. For very formal communication you can select lower level of creativity.</p></>}
+                                tooltip={<><strong>This the creativity slider.</strong><p>Please move the slider value to the creativity level you want. Higher value corresponds to more creative. For very formal communication you can select lower level of creativity.</p></>}
                             />
                         </Grid>
                     </Grid>                    
                 </Grid>
                 <Grid item md={5} xs={12}>
-                    {!pageLoading &&<CardField width='90%' label="Query History" values={queryData}/> }
+                    {!pageLoading &&<CardField width='90%' label="Prompt History" values={queryData}/> }
                 </Grid>
 
                 <Grid item xs={12}>
@@ -93,9 +98,18 @@ const SimpleApp = () => {
                             loadingPosition="end"
                             endIcon={<ArticleOutlined />}
                             variant="contained"
+                            color='primary'
                         >
                         <span>Generate Content</span>
                     </LoadingButton>
+                    <InputLabel
+                        style={{
+                            fontSize:'.8rem',
+                            color: '#d32f2f'
+                        }}
+                    >
+                        {pageError}
+                    </InputLabel>
                     <ResponsiveDialog 
                         showDialog={show}
                         content = {content}

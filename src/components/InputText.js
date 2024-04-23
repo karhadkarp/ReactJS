@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react';
 import { Button, debounce } from '@mui/material';
 import Flag from 'react-world-flags';
 
-function InputText({ id = getUniqueId(), label, startAdornment = null, endAdorment = null, handleChange, multiline = false, width, enableTypeAhead = false, getData, clearData, suggestionsData, showFlag }) {
+function InputText({ id = getUniqueId(), label, startAdornment = null, endAdorment = null, handleChange, multiline = false, width, enableTypeAhead = false, getData, clearData, suggestionsData, showFlag, message='' }) {
     const [focused, setFocused] = useState(false);
     const [value, setValue] = useState('');
     const [suggestions, setSuggestions] = useState([]);
+    const [stopData, setStopData] = useState(false);
 
     const handleFocus = () => {
         setFocused(true);
@@ -23,6 +24,11 @@ function InputText({ id = getUniqueId(), label, startAdornment = null, endAdorme
 
 
     const debouncedFetch = debounce(value => {
+        if(stopData) {
+            setStopData(false);
+            return;
+        }
+
         if (enableTypeAhead && value.length >= 3) {
             getData && getData(value); 
         } else {
@@ -60,6 +66,7 @@ function InputText({ id = getUniqueId(), label, startAdornment = null, endAdorme
                     onFocus={() => handleFocus()}
                     onBlur={() => handleBlur()}
                 />
+                <div style={{color: '#d32f2f', display:'flex', alignContent:'left', fontSize:'.8rem'}}>{message}</div>
                 {enableTypeAhead && suggestions.length > 0 && (
                     <div style={{
                         display: 'flex',
@@ -70,6 +77,7 @@ function InputText({ id = getUniqueId(), label, startAdornment = null, endAdorme
                                 onClick={() => {
                                     handleChange && handleChange(suggestion.customer_id);
                                     setValue(suggestion.cust_name);
+                                    setStopData(true);
                                     setSuggestions([]);
                                 }}
                                 style={{
