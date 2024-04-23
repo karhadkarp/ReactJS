@@ -54,10 +54,10 @@ const SliderField = ({ label, className, minValue=0, maxValue=100, handleChange=
     }
 
     return (
-        <div style={{display:'flex', flexDirection:'row'}} className={className}>
+        <div style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}} className={className}>
             <InputLabel 
                 style={{
-                    fontSize:'.875rem',
+                    fontSize:'1rem',
                     color: focused ? '#1976d2' : grey[500]
                 }}
             >
@@ -69,7 +69,7 @@ const SliderField = ({ label, className, minValue=0, maxValue=100, handleChange=
                 marks={marks}
                 defaultValue={50} 
                 valueLabelDisplay="auto"
-                style={{margin:'-.5rem 1rem 1rem 1rem', maxWidth:'100%'}}
+                style={{margin:'-.6rem .5rem 1rem 1rem', maxWidth:'100%'}}
                 onChange={handleValueChange}
                 onFocus={()=> handleFocus()}
                 onBlur={() => handleBlur()}

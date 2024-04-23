@@ -19,13 +19,20 @@ function App() {
     setValue(newValue);
   };
 
+  const styleValue = small ? '1rem .5rem' : '1rem 2rem';
+
   return (
     <div className="App">
       <header className="App-header">
         <img src={medium? small_logo: logo} alt='Dil se Digital' height={40} />
-        <h1 className={small ? 'App-title-small' : 'App-title'}>Generate Content</h1>
+        <h1 className={small ? 'App-title-small' : 'App-title'}>Customer Engagement</h1>
       </header>
-      <Grid container direction="row" justifyContent='center' style={{padding:'1rem 2rem'}}>
+      <Grid 
+        container 
+        direction="row" 
+        justifyContent='center' 
+        style={{padding: styleValue}}
+        >
         <Grid item xs={12}>
         <TabContext value={value}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

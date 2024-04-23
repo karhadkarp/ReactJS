@@ -22,6 +22,8 @@
 
 .App-header h1.App-title-small {
   margin-left: 2rem;
+  font-size: 1.4rem;
+  align-content: center;
 }
 
 .App-link {
