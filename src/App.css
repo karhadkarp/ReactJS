@@ -4,8 +4,6 @@
 
 .App-header {
   background-color: #0C1149;
-  /* min-height: 4rem; */
-  /* width: 100%; */
   display: flex;
   padding: 1rem;
   flex-direction: row;
@@ -20,6 +18,10 @@
   margin-left: 30%;
   margin-top: 0;
   margin-bottom: 0
+}
+
+.App-header h1.App-title-small {
+  margin-left: 2rem;
 }
 
 .App-link {

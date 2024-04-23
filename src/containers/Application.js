@@ -1,4 +1,4 @@
-import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, useMediaQuery, useTheme } from '@material-ui/core';
+import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment } from '@material-ui/core';
 import { Article, ArticleOutlined, Person } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import MultipleSelect from '../components/MultiSelect';
@@ -146,7 +146,7 @@ const Application = () => {
         setShow(false);
         setPageLoading(true);
         setLoading(true);
-        let respText = await getGeneralQueryResp({data: `Convert the following text in ${language} ${origialText}`, creativity: .5});
+        let respText = await getGeneralQueryResp({data: `Convert the following text in ${language} language ${origialText}`, creativity: .5});
         respText = respText.replace('```html', '');
         respText = respText.replace('```', '')
         setConvertedText(respText);
@@ -228,6 +228,7 @@ const Application = () => {
                         content={content}
                         converttoLocal={handleConversion}
                         customerLanguage={language}
+                        customerCountry={country}
                         showLocal={showLocal}
                         htmlContent={
                             showLocal ? <div dangerouslySetInnerHTML={{ __html: convertedText }} /> :<div dangerouslySetInnerHTML={{ __html: content }} />}

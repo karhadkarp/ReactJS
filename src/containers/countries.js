@@ -6,7 +6,7 @@ export const countries = {
     },
     "China": {
         "country": "CN",
-        "language": ["Mandarin", "Cantonese"]
+        "language": ["Mandarin"]
     },
     "France": {
         "country": "FR",
@@ -18,7 +18,7 @@ export const countries = {
     },
     "India": {
         "country": "IN",
-        "language": ["Hindi", "English"]
+        "language": ["Hindi"]
     },
     "Indonesia": {
         "country": "ID",
@@ -34,7 +34,7 @@ export const countries = {
     },
     "Maldives": {
         "country": "MV",
-        "language": ["Maldivian"]
+        "language": ["English"]
     },
     "New Zealand": {
         "country": "NZ",
@@ -50,11 +50,11 @@ export const countries = {
     },
     "Sri Lanka": {
         "country": "LK",
-        "language": ["Sinhala"]
+        "language": ["English"]
     },
     "Taiwan": {
         "country": "TW",
-        "language": ["Mandarin", "Cantonese"]
+        "language": ["Mandarin"]
     },
     "Thailand": {
         "country": "TH",

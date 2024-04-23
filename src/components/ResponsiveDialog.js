@@ -5,13 +5,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { FormControlLabel, Grid, Switch } from '@material-ui/core';
+import { FormControlLabel, Switch } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import logo from'../dilSeDigital.png';
 
-export default function ResponsiveDialog({showDialog, closeDialog, showLocal, htmlContent, converttoLocal, customerLanguage}) {
+export default function ResponsiveDialog({showDialog, closeDialog, showLocal, htmlContent, converttoLocal, customerLanguage, customerCountry}) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  const smallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleClose = () => {
     closeDialog && closeDialog();
@@ -52,7 +53,7 @@ export default function ResponsiveDialog({showDialog, closeDialog, showLocal, ht
                     control={
                       <Switch checked={local} onChange={handleChange} name="local" color='primary'/>
                     }
-                  label={`Show in ${customerLanguage}`}
+                  label={smallScreen ? `${customerCountry}` : `Switch to ${customerLanguage}`}
                 />
                 )}
             </div>

@@ -12,6 +12,7 @@ import SimpleApp from './containers/SimpleApp';
 function App() {
   const theme = useTheme();
   const medium = useMediaQuery(theme.breakpoints.down('md'));
+  const small = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [value, setValue] = useState('1');
   const handleChange = (event, newValue) => {
@@ -22,19 +23,19 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={medium? small_logo: logo} alt='Dil se Digital' height={40} />
-        <h1>Generate Content</h1>
+        <h1 className={small ? 'App-title-small' : 'App-title'}>Generate Content</h1>
       </header>
       <Grid container direction="row" justifyContent='center' style={{padding:'1rem 2rem'}}>
         <Grid item xs={12}>
         <TabContext value={value}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <TabList onChange={handleChange} aria-label="lab API tabs example">
-                <Tab label={'General Purpose Prompt'} value="1" />
-                <Tab label="Customer Specific Prompt" value="2" />
+                <Tab label="Customer Focussed" value="1" />
+                <Tab label={'General Purpose'} value="2" />
               </TabList>
             </Box>
-            <TabPanel value="1">{<SimpleApp />}</TabPanel>
-            <TabPanel value="2">{<Application />}</TabPanel>
+            <TabPanel value="1">{<Application />}</TabPanel>
+            <TabPanel value="2">{<SimpleApp />}</TabPanel>
           </TabContext>
         </Grid>
       </Grid>
