@@ -1,5 +1,5 @@
-import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, InputLabel, useMediaQuery, useTheme } from '@material-ui/core';
-import { Article, ArticleOutlined } from '@mui/icons-material';
+import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, InputLabel} from '@material-ui/core';
+import { Article } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputText from '../components/InputText';
 import { useState } from 'react';
@@ -7,11 +7,10 @@ import SliderValue from '../components/SliderField';
 import CardField from '../components/CardField';
 import ResponsiveDialog from '../components/ResponsiveDialog';
 import { getGeneralQueryResp } from '../apis.js';
+import gemini from'./google-gemini-icon.png';
 
 const SimpleApp = () => {
 
-    const theme = useTheme();
-    const matcheSmall = useMediaQuery(theme.breakpoints.up('md'));
     const[pageError, setPageError] = useState('');
    
     const[creativity, setCreativity] = useState(50);
@@ -96,11 +95,12 @@ const SimpleApp = () => {
                             onClick={handleClick}
                             loading={loading}
                             loadingPosition="end"
-                            endIcon={<ArticleOutlined />}
+                            endIcon={<img src={gemini} alt='Gemini' height={40} />}
                             variant="contained"
                             color='primary'
+                            style={{width: '12rem', fontSize:'1rem', justifyContent:'space-around'}}        
                         >
-                        <span>Generate Content</span>
+                        <span>Submit</span>
                     </LoadingButton>
                     <InputLabel
                         style={{

@@ -1,5 +1,5 @@
-import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, InputLabel, TextField } from '@material-ui/core';
-import { Article, ArticleOutlined, Person } from '@mui/icons-material';
+import { Backdrop, Box, CircularProgress, Divider, Grid, InputAdornment, InputLabel } from '@material-ui/core';
+import { Article, Person } from '@mui/icons-material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import MultipleSelect from '../components/MultiSelect';
 import InputText from '../components/InputText';
@@ -10,6 +10,7 @@ import ResponsiveDialog from '../components/ResponsiveDialog';
 import { getCustomers, getCutomerQueryResp, getGeneralQueryResp } from '../apis.js';
 import Flag from 'react-world-flags'
 import {countries} from "./countries.js"
+import gemini from'./google-gemini-icon.png';
 
 const Application = () => {
 
@@ -231,11 +232,13 @@ const Application = () => {
                         onClick={handleClick}
                         loading={loading}
                         loadingPosition="end"
-                        endIcon={<ArticleOutlined />}
+                        endIcon={<img src={gemini} alt='Gemini' height={40} />}
                         variant="contained"
                         color='primary'
+                        width="10rem"  
+                        style={{width: '12rem', fontSize:'1rem', justifyContent:'space-around'}}        
                     >
-                        <span>Generate Content</span>
+                        <span>Submit</span>
                     </LoadingButton>
                     <InputLabel
                         style={{

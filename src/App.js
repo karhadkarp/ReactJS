@@ -25,7 +25,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={medium? small_logo: logo} alt='Dil se Digital' height={40} />
-        <h1 className={small ? 'App-title-small' : 'App-title'}>Customer Engagement</h1>
+        <h1 className={small ? 'App-title-small' : 'App-title'}>Content Composer</h1>
       </header>
       <Grid 
         container 
